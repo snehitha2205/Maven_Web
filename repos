@@ -2,3 +2,415 @@ https://github.com/Gayathri2608-hub/maven-practice
 https://github.com/Edigirala-Neksha/se-lab-fourth
 https://github.com/Tejaswi-g/vit2.git
 https://github.com/Savram674
+
+
+<dependency>
+<groupId>junit</groupId>
+<artifactId>junit</artifactId>
+<version>4.13.2</version>
+</dependency>
+what will maven do in this case
+how can u ensure a proper version is used
+-> if version is not specified, then it will search in its parent pom, and super pom for the version.
+If not found, build will fail.
+To resolve this, use <version> in pom.xml to ensure correct version is used.
+
+Suppose you misspelled <artifactId> as <artificatId> in <dependency> block .
+What kind of error will maven throw during maven install? How do you debug such XML mistakes
+
+Error: Unrecognised tag: 'artificatId'
+
+You written like this <packing> tag in pom 
+What does maven assume by default , and what impact will it have on this web project?
+ 
+If the <packaging> tag is misspelled as <packing>, Maven will default to jar packaging. 
+
+Wrong Artifact: Instead of producing a .war file, Maven will create a .jar file. A .jar file is a standard Java archive for libraries or standalone applications, not a web application. It will contain your compiled .class files, but it will not have the correct directory structure (WEB-INF, web.xml, etc.) that a web server like Tomcat requires for deployment.
+
+Adding servlet-api of 2.5
+<dependency> <groupId>javax.servlet</groupId>
+ <artifactId>servlet-api</artifactId>
+ <version>2.5</version> 
+<scope>provided</scope> 
+</dependency>
+
+<scope>provided</scope>: This is a critical element for web application development. It tells Maven that the dependency will be provided by the servlet container (like Tomcat or Jetty) at runtime. Maven will use this library for compiling your code, but it will not include it in your final .war file. This prevents dependency conflicts and keeps your WAR file size small.
+
+after building the WAR , you notice that the generated file is named HospitalMgmtSystem-0.0.1-SNAPSHOT.war instead of HospitalMgmtSystem.WAR how to fix it
+
+<project ...> ... 
+<artifactId>HospitalMgmtSystem</artifactId> ... <build> <finalName>${project.artifactId}</finalName>
+ </build> </project>
+<finalName>localhost:8080/FoodSystem</finalName> will it work, if not how to fix
+The <finalName> tag should only contain the desired name of the file itself. To make your web application accessible at a specific path like /FoodSystem on your server, you should set the <finalName> to just FoodSystem.
+
+in url tag written <url>http://maven.java.org12</url>
+will maven accept this?
+what is the correct purpose of the url element in pom.xml
+Yes, Maven will accept <url>http://maven.java.org12</url>. Maven does not validate the URL's format or check if the website exists; it simply treats the value as a string for documentation purposes.
+
+Purpose of the <url> Element
+The <url> element's sole purpose is to provide the public URL for the project's website. It is used by the Maven Site Plugin to generate documentation and reports. For example, when you run mvn site, Maven includes this URL in the generated project reports, making it easy for developers to find more information about the project, its source code, or its issue tracker. The URL is meant for humans and has no impact on the build, dependency resolution, or artifact naming.
+
+mvn clean install -U
+What this command does:
+mvn clean: Cleans up any previous build artifacts.
+mvn install: Builds your project and installs the .jar file into your local repository.
+-U: This is the crucial part. It forces Maven to update all dependencies, ignoring the cached failures and attempting to re-download them from the central repository.
+
+The <url> tag in pom.xml provides the project’s homepage or repository link. It’s for informational purposes and helps others locate documentation, source code, or project details.
+Yes ✅ Maven will accept it.
+The <url> tag in pom.xml is just informational metadata. It can be any valid URL, including a localhost URL like:
+<url>http://localhost:8080/FoodSystem</url>
+No validation against availability – Maven does not check if the URL is reachable or exists. It simply stores it in the project metadata.
+
+Maven archetype is a template for creating projects.
+maven-archetype-quickstart is commonly used for simple Java projects with src/main/java
+
+<build>
+    <directory>build_output</directory>
+</build>
+Explanation:
+Default output directory is target/.
+<directory> specifies a custom folder for compiled classes, JAR/WAR, and other generated artifacts.
+After mvn clean install, all outputs will be inside build_output/ instead of target/.
+mvn dependency:tree
+Displays the dependency hierarchy of the project.
+Shows:
+Direct dependencies (explicitly declared in pom.xml)
+Transitive dependencies (dependencies of dependencies)
+Version conflicts, if any, and which version is selected
+
+mvn package -DskipTests
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+GIT commands
+You can set your Git username and email globally (for all repositories on your system) using these commands:
+Step 1: Set your global username
+git config --global user.name "Your Name"
+Step 2: Set your global email
+git config --global user.email "your.email@example.com"
+
+Create and switch in one command
+git checkout -b branch_name
+
+Restoring stagged file:
+git restore --staged a.txt
+
+list of all remote repositories linked to your local Git repository, you can use:
+1. Simple list of remote names
+git remote
+Removing remote: git remote remove origin
+
+Deleting branch:
+Locally: git branch -d <branchName>
+Repo: git push origin --delete branch_name
+1. Applying a Patch File
+If you already have a patch file (say fix.patch), you can apply it like this:
+git apply fix.patch
+👉 This will apply the changes to your working directory, but they are not yet committed.
+🔹 2. Applying and Recording in Commit History
+If you want the patch to preserve the original commit message/author/date:
+git am fix.patch
+git am = apply patch as a commit.
+
+
+This way, the commit will appear in your history as if the original author committed it.
+Creating patch:
+
+git format-patch -3 —> this is for last three commits
+
+ 1. If your local changes are UNCOMMITTED
+You need to temporarily save them before pulling.
+Option A: Use stash
+git stash
+git pull origin branch_name
+git stash pop
+git stash → saves your local modifications.
+git pull → updates your branch with remote changes.
+git stash pop → re-applies your saved changes on top.
+👉 Best when you want to quickly sync but keep your edits.
+
+Option B: Commit your changes first
+git add .
+git commit -m "WIP: my local changes"
+git pull --rebase origin branch_name
+--rebase moves your commits on top of the newly pulled changes.
+
+
+Keeps history clean (no extra merge commits).
+
+🔹 2. If your local changes are ALREADY COMMITTED
+Just bring your branch up to date:
+git pull --rebase origin branch_name
+Git will replay your commits on top of the updated branch.
+
+
+If conflicts occur, resolve them and continue with:
+
+ git rebase --continue
+
+
+Merge conflict:
+
+https://chatgpt.com/s/t_68cf637596408191b037ac730cabdea2
+
+Aborting merge:
+Git merge –abort
+
+→ git commit --no-edit
+If you want to save and exit (finish the commit):
+Press Esc (to make sure you’re in command mode)
+ :wq
+ (means write & quit)
+
+
+Press Enter.
+
+Edit recent commit message: 
+git commit --amend -m "merge resolved"
+https://chatgpt.com/s/t_68cf689714e08191a687b68127b628e0
+
+
+
+If your local branch is main and you want to see differences:
+git checkout main
+git fetch origin
+git diff origin/main
+
+Tomcat commands:
+
+Startup.bat
+Shutdown.bat
+
+Place war file in WebApps..
+
+
+
+In project directory:
+docker build -t mytomcatapp7007 .
+docker run -d -p 7007:7007 mytomcatapp7007
+
+Pulling and running:
+To pull the official Nginx latest image from Docker Hub, use this command:
+docker pull nginx:latest
+
+Running pulled image as container named myngnix on port 8090
+docker run --name myngnix -p 8090:80 -d nginx:latest
+
+To stop a running Docker container named myapp, run:
+docker stop myapp
+Docker start myapp
+To force stop: docker kill myapp
+
+About image and container:
+https://chatgpt.com/s/t_68cfaba1c1188191ae223bf1f4b62269
+
+
+
+Changing port number from 8080 to 5000:
+
+FROM tomcat:9.0
+COPY target/Food-System-xyz.war /usr/local/tomcat/webapps/ROOT.war
+RUN sed -i 's/port="8080"/port="5000"/' /usr/local/tomcat/conf/server.xml
+EXPOSE 5000
+CMD ["catalina.sh","run"]
+
+
+
+To view all images: docker images
+Container status: docker ps
+Docker ps -a => to see all the containers running and also not running
+Commit in docker:
+Docker commit <containerId> name
+
+git revert <commit-hash>
+
+ 
+
+
+Docker compose:
+
+Docker compose up --build
+Docker compose down
+
+
+
+
+git apply --verbose 0001-first-commit.patch
+
+
+
+Git show: changes made by latest commit
+Git fetch git diff : difference after latest commit
+
+You staged the wrong file (temp.txt). Remove from staging but keep file – 2M
+git reset temp.txt
+git restore --staged temp.txt
+
+8. Temporarily save uncommitted changes (stash) 
+git stash
+9. Later, restore stashed changes 
+git stash pop
+13. Connect to GitHub using SSH for secure authentication – 3M
+Step 1 → Generate SSH Key:
+ssh-keygen -t rsa -b 4096 -C "yourmail@gmail.com"
+
+Step 2 → Add SSH key to GitHub:
+ssh-add ~/.ssh/id_rsa
+
+(Optional: Copy key to GitHub)
+cat ~/.ssh/id_rsa.pub
+https://chatgpt.com/s/t_692bbcbbe7e8819191769b1d20c37e74
+
+
+
+Create Maven Java Project in Eclipse
+Step 1: File → New → Project
+Step 2: Search “Maven” → Select
+Maven Project
+Step 3: Choose archetype:
+maven-archetype-quickstart
+
+Step 4: Enter:
+GroupId: com.example
+
+
+ArtifactId: myapp
+
+
+Click Finish → project created.
+
+
+
+
+Add JSTL 1.2 dependency & Explain its Use – 5M
+Dependency in pom.xml
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>jstl</artifactId>
+    <version>1.2</version>
+</dependency>
+
+ Add <directory> inside <build> to set new output folder – 3M
+Inside pom.xml:
+<build>
+    <directory>${project.basedir}/build_output</directory>
+</build>
+
+Output artifact now goes to:
+build_output/
+    myapp.war
+
+
+
+docker pull ubuntu
+docker run -it --name myubuntu ubuntu
+echo "hello" > myfile.txt
+exit
+docker commit myubuntu ubuntu-with-file
+docker run -it ubuntu-with-file
+
+Tag the pulled image
+docker tag nginx mynginx:v1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dependency>
+    <groupId>com.mysql</groupId>
+    <artifactId>mysql-connector-j</artifactId>
+    <version>8.0.33</version>
+</dependency>
+
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0</version>
+        </plugin>
+    </plugins>
+</build>
+
+
+SMMA:
+from tomcat:9.0-jdk11
+copy target/SocialMediaMiniApp.war /usr/local/tomcat/webapps/ROOT.war
+expose 8081
+CMD ["catalina.sh","run"]
+
+
+MJA:
+FROM openjdk:17
+WORKDIR /app
+COPY target/MyJavaProject-0.0.1-SNAPSHOT.jar /app/app.jar
+CMD ["java", "-jar", "/app/app.jar"]
+
+FROM eclipse-temurin:17-jdk 
+Change WAR name to SMMA-WebApp
+<build>
+    <finalName>SMMA-WebApp</finalName>
+</build>
+
+
+
+
+Action
+Command
+Download
+from ngrok.com
+Add token
+ngrok config add-authtoken <token>
+Start for Jenkins
+ngrok http 8080
+
+
+
+
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/user/repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                bat 'mvn clean install'
+            }
+        }
+    }
+}
+
+
+
